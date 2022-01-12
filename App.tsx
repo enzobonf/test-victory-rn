@@ -3,17 +3,17 @@ import React from 'react';
 import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {VictoryBar, VictoryChart, VictoryTheme} from 'victory-native';
 
-const data: any[] = [];
-
 const getRandom = (min: any, max: any) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
 const gerarDadosAleatorios = () => {
-  for (let i = 1; i <= 38; i++) {
+  const data: any[] = [];
+  for (let i = 1; i <= 15; i++) {
     let obj = {mortalidade: getRandom(i, 130), idade: i};
     data.push(obj);
   }
+  return data;
 };
 
 const window = Dimensions.get('window');
@@ -21,6 +21,7 @@ const screen = Dimensions.get('screen');
 
 export default class App extends React.Component {
   state = {
+    data: [],
     dimensions: {
       window,
       screen,
@@ -29,11 +30,14 @@ export default class App extends React.Component {
 
   dimensionsSubscription: any;
 
-  onChange = ({window, screen}: {window: any; screen: any}) => {
-    this.setState({dimensions: {window, screen}});
+  onChange = async ({window, screen}: {window: any; screen: any}) => {
+    await this.setStateAsync({dimensions: {window, screen}});
   };
 
   componentDidMount() {
+    const data: any[] = gerarDadosAleatorios();
+    this.setStateAsync({data});
+
     this.dimensionsSubscription = Dimensions.addEventListener(
       'change',
       this.onChange,
@@ -44,10 +48,14 @@ export default class App extends React.Component {
     this.dimensionsSubscription?.remove();
   }
 
-  render() {
-    gerarDadosAleatorios();
+  setStateAsync = async (state: any) => {
+    return new Promise(resolve => {
+      this.setState(state, () => resolve(true));
+    });
+  };
 
-    const {dimensions} = this.state;
+  render() {
+    const {dimensions, data} = this.state;
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
@@ -57,13 +65,16 @@ export default class App extends React.Component {
             theme={VictoryTheme.material}
             scale="linear">
             <VictoryBar
-              barRatio={0.6}
+              samples={100}
+              barWidth={20}
               data={data}
               x="idade"
               y="mortalidade"
               labels={({datum}) => datum.mortalidade}
               style={{
-                data: {fill: '#b9d3f8'},
+                data: {
+                  fill: '#b9d3f8',
+                },
               }}
             />
           </VictoryChart>
@@ -75,7 +86,7 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f5fcff',
