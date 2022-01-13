@@ -85,12 +85,12 @@ export default class App extends React.Component {
                 },
               }}
             />
-            <VictoryLine
+            {/* <VictoryLine
               data={data}
               x="idade"
               y="mortalidade"
               labels={({datum}) => datum.mortalidade}
-            />
+            /> */}
           </VictoryChart>
         </View>
       </ScrollView>
