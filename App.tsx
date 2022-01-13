@@ -29,6 +29,7 @@ const screen = Dimensions.get('screen');
 export default class App extends React.Component {
   state = {
     data: [],
+    data2: [],
     dimensions: {
       window,
       screen,
@@ -43,7 +44,8 @@ export default class App extends React.Component {
 
   componentDidMount() {
     const data: any[] = gerarDadosAleatorios();
-    this.setStateAsync({data});
+    const data2: any[] = gerarDadosAleatorios();
+    this.setStateAsync({data, data2});
 
     this.dimensionsSubscription = Dimensions.addEventListener(
       'change',
@@ -62,7 +64,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    const {dimensions, data} = this.state;
+    const {dimensions, data, data2} = this.state;
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
@@ -85,12 +87,31 @@ export default class App extends React.Component {
                 },
               }}
             />
-            {/* <VictoryLine
+            <VictoryLine
               data={data}
               x="idade"
               y="mortalidade"
-              labels={({datum}) => datum.mortalidade}
-            /> */}
+              style={{
+                data: {
+                  stroke: 'green',
+                },
+              }}
+            />
+          </VictoryChart>
+          <VictoryChart
+            width={dimensions.screen.width}
+            theme={VictoryTheme.material}
+            containerComponent={<VictoryZoomContainer />}>
+            <VictoryLine
+              data={data2}
+              x="idade"
+              y="mortalidade"
+              style={{
+                data: {
+                  stroke: 'green',
+                },
+              }}
+            />
           </VictoryChart>
         </View>
       </ScrollView>
